@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>VHDL when else to case converter</title>
+</head>
+
+<body>
+
+<!--Enter VHDL code here: <input type="text" id="search_form_input"></input> -->
+Enter VHDL code here: <textarea name="sourcecode" cols="200" rows="1" required="required" id="search_form_input" class="myinputs" onkeyup="process();"></textarea>
+<div>
+    <input type="radio" name="mode" value="formatter" class="myinputs" onchange="process();">Formatter
+    <input type="radio" name="mode" value="whenelse" class="myinputs" onchange="process();">When Else
+    <input type="radio" name="mode" value="debug" class="myinputs" onchange="process();">Debug
+  </div>
+
+<div id="place_for_result"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+
+function process()
+{
+    text = document.getElementsByName('sourcecode').item(0).value;
+    mode = $("input[name='mode']:checked").val();
+
+    $.ajax({
+      url: "/edatools",
+      type: "get",
+      data: {jsdata: text, jsmode: mode},
+      success: function(response) {
+        $("#place_for_result").html(response);
+      },
+      error: function(xhr) {
+        //Do Something to handle error
+      }
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>
