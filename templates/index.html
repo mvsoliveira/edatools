@@ -29,7 +29,7 @@ function process()
 
     $.ajax({
       url: "/edatools",
-      type: "get",
+      type: "post",
       data: {jsdata: text, jsmode: mode},
       success: function(response) {
         $("#place_for_result").html(response);

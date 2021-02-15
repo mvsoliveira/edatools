@@ -10,7 +10,7 @@ regex = r"((?P<A>^\s*(?P<AS>[\w\.\,\(\s\)]+)\s[<:]=\s*)?($\s*)?(?P<whenelse>\s*(
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -29,6 +29,7 @@ def formatter(string):
 def whenelse(string):
     matches = re.finditer(regex, string, re.MULTILINE)
     outs = ""
+    signal = ""
     for match in matches:
         mdict = match.groupdict()
         if mdict['A']:
@@ -47,10 +48,10 @@ funcs = {
     'whenelse' : whenelse,
 }
 
-@app.route('/edatools')
+@app.route('/edatools', methods=['GET', 'POST'])
 def edatools():
-    text = request.args.get('jsdata')
-    mode = request.args.get('jsmode')
+    text = request.form['jsdata']
+    mode = request.form['jsmode']
     string = unquote(text)
     return funcs[mode](string)
 
