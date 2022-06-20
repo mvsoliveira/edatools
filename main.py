@@ -75,4 +75,13 @@ def verilog_processing():
     return html
 
 if __name__ == '__main__':
+    try:
+        import googleclouddebugger
+
+        googleclouddebugger.enable(
+            breakpoint_enable_canary=True
+        )
+    except ImportError:
+        pass
+
     app.run(debug=True)
