@@ -1,11 +1,12 @@
 import re
 
 class hdl_hierarchy:
-    def __init__(self, string, lines, name):
+    def __init__(self, string, lines, name, generate_file=False):
         self.input_hdl = string
         lines[0]-= 1
         self.lines = lines
         self.name=name
+        self.generate_file = generate_file
         self.selec_hdl = '\n'.join(self.input_hdl.split('\n')[slice(*lines)])
         self.assignemnt_regex = r"\s+(?P<L>[\w\[\]]+)\s+(?:(?:<=)|(?::=)|(?:=))\s+(?P<R>.+);"
         self.right_assignment_variables_regex = r"(?P<V>\b(?<!\')[a-z][0-9a-z\_]+)(?:[\+\*\-\:\w\[\]]+)?"
@@ -70,14 +71,15 @@ class hdl_hierarchy:
 
         ports_str = ',\n'.join(self.ports)
         instance_str = ',\n'.join(self.ios)
-        module_str = f'//Begin automatic-generated hierarchical module\nmodule {self.name} (\n{ports_str}\n);\n\n{self.selec_hdl}\nendmodule\n//End automatic-generated hierarchical module'
-        module_str += '\n' + '\n'.join(self.input_hdl.split('\n')[0:self.lines[0]])
-        module_str += '\n\n//Automatic-generated hierarchical module instantiation\n'
-        module_str += f'{self.name} {self.name}_inst (\n{instance_str}\n);'
-        module_str += '\n\n//End automatic-generated hierarchical module instantiation\n'
-        module_str += '\n'.join(self.input_hdl.split('\n')[self.lines[1]:])
-        with open(f'{self.name}.sv', 'w') as file:
-            file.write(module_str)
+        self.module_str = f'//Begin automatic-generated hierarchical module\nmodule {self.name} (\n{ports_str}\n);\n\n{self.selec_hdl}\nendmodule\n//End automatic-generated hierarchical module'
+        self.module_str += '\n' + '\n'.join(self.input_hdl.split('\n')[0:self.lines[0]])
+        self.module_str += '\n\n//Automatic-generated hierarchical module instantiation\n'
+        self.module_str += f'{self.name} {self.name}_inst (\n{instance_str}\n);'
+        self.module_str += '\n\n//End automatic-generated hierarchical module instantiation\n'
+        self.module_str += '\n'.join(self.input_hdl.split('\n')[self.lines[1]:])
+        if self.generate_file:
+            with open(f'{self.name}.sv', 'w') as file:
+                file.write(self.module_str)
 
 
 if __name__ == "__main__" :

@@ -1,0 +1,53 @@
+<!doctype html>
+<title>CodeMirror: Verilog/SystemVerilog mode</title>
+<link rel="stylesheet" href="{{ url_for('static', filename="codemirror/lib/codemirror.css") }}">
+<script src="{{ url_for('static', filename="codemirror/lib/codemirror.js") }}"></script>
+<script src="{{ url_for('static', filename="codemirror/addon/edit/matchbrackets.js") }}"></script>
+<script src="{{ url_for('static', filename="codemirror/mode/verilog/verilog.js") }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<style>
+  .CodeMirror {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+</style>
+<article>
+  <h2>SystemVerilog Hierarchical Generator</h2>
+  <div><textarea id="code" name="code"></textarea><br></div>
+  <div> Line numbers: <input type="text" id="lines" name="lines" , placeholder="200-260"> Module name: <input type="text" id="name" name="name"><input type="button" id="run" name="run" value="Run" onclick="process();"></div><br> Result:<br>
+  <div id="place_for_result"></div>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      spellcheck: true,
+      rows: 500,
+      mode: {
+        name: "verilog",
+        noIndentKeywords: ["package"]
+      }
+    });
+    editor.setSize("100%", "600");
+
+    function process() {
+      code = editor.getValue();
+      lines = document.getElementsByName('lines').item(0).value;
+      name = document.getElementsByName('name').item(0).value;
+      $.ajax({
+        url: "/verilog_processing",
+        type: "post",
+        data: {
+          jscode: code,
+          jsname: name,
+          jslines: lines
+        },
+        success: function(response) {
+          $("#place_for_result").html(response);
+        },
+        error: function(xhr) {
+          //Do Something to handle error
+        }
+      });
+    }
+  </script>
+</article>

@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request
 from urllib.parse import unquote
 from pygments import highlight
-from pygments.lexers.hdl import VhdlLexer
+from pygments.lexers.hdl import VhdlLexer, SystemVerilogLexer
 from pygments.formatters import HtmlFormatter
+from hdl_hierarchy import hdl_hierarchy
 import re
 import pandas as pd
 
@@ -10,9 +11,14 @@ regex = r"((?P<A>^\s*(?P<AS>[\w\.\,\(\s\)]+)\s[<:]=\s*)?($\s*)?(?P<whenelse>\s*(
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/utils', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+@app.route('/', methods=['GET', 'POST'])
+def verilog():
+    return render_template('verilog.html')
+
 
 def debug_matches(string):
     matches = re.finditer(regex, string, re.MULTILINE)
@@ -55,6 +61,18 @@ def edatools():
     string = unquote(text)
     return funcs[mode](string)
 
+@app.route('/verilog_processing', methods=['GET', 'POST'])
+def verilog_processing():
+    code = request.form['jscode']
+    lines = request.form['jslines']
+    name = request.form['jsname']
+    code_string = unquote(code)
+    code_lines = unquote(lines)
+    code_name = unquote(name)
+    lines_list = ([int(i) for i in code_lines.split('-')])
+    hier = hdl_hierarchy(code_string, lines_list, code_name, generate_file=False)
+    html = highlight(hier.module_str, SystemVerilogLexer(), HtmlFormatter(full=True))
+    return html
 
 if __name__ == '__main__':
     app.run(debug=True)
