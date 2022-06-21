@@ -250,7 +250,7 @@ module Selection_Block(
                     transverse_e_tau_selection_reg <= {USER_ENERGY_WIDTH{1'b0}};
                     bcav_e_flag_reg                <= 1'b0;
                 end
-            end
+            endx`
             else
             begin
                 transverse_e_tau_selection_reg        <= transverse_e_second_reg;

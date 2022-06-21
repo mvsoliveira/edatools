@@ -72,7 +72,7 @@ def verilog_processing():
     lines_list = ([int(i) for i in code_lines.split('-')])
     hier = hdl_hierarchy(code_string, lines_list, code_name, generate_file=False)
     html = highlight(hier.module_str, SystemVerilogLexer(), HtmlFormatter(full=True))
-    return html
+    return hier.debug_html+html
 
 if __name__ == '__main__':
     try:
