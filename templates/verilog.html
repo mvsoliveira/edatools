@@ -1,5 +1,5 @@
 <!doctype html>
-<title>CodeMirror: Verilog/SystemVerilog mode</title>
+<title>SystemVerilog Hierarchical Encapsulator</title>
 <link rel="stylesheet" href="{{ url_for('static', filename="codemirror/lib/codemirror.css") }}">
 <script src="{{ url_for('static', filename="codemirror/lib/codemirror.js") }}"></script>
 <script src="{{ url_for('static', filename="codemirror/addon/edit/matchbrackets.js") }}"></script>
@@ -13,7 +13,11 @@
   }
 </style>
 <article>
-  <h2>SystemVerilog Hierarchical Generator</h2>
+  <h2>SystemVerilog Hierarchical Encapsulator</h2>
+  <h5>Select a line number range to be encapsulated into a new hierarchical module.<br>
+  Please also provide a name to the new module.<br>
+  Use it only to encapsulate combinatorial and sequential assigments to a new hierarchical module. Module instantiations are ignored.<br>
+  Make sure only one port/variable is defined per each code line.</h5>
   <div><textarea id="code" name="code">
   </textarea><br></div>
   <div> Line numbers: <input type="text" id="lines" name="lines" , placeholder="13-31">

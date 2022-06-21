@@ -9,7 +9,7 @@ class hdl_hierarchy:
         self.name=name
         self.generate_file = generate_file
         self.selec_hdl = '\n'.join(self.input_hdl.split('\n')[slice(*lines)])
-        self.assignemnt_regex = r"\s*(?P<L>[\w\[\]]+)\s+(?:(?:<=)|(?::=)|(?:=))\s+(?P<R>.+);"
+        self.assignemnt_regex = r"\s*(?P<L>\w[\w\d]*)(?:\[[\w\d]*\])*\s*(?:(?:<=)|(?::=)|(?:=))\s+(?P<R>.+);"
         self.right_assignment_variables_regex = r"(?P<V>\b(?<!\')[a-z][0-9a-z\_]+)(?:[\+\*\-\:\w\[\]]+)?"
         self.conditional_regex = r"^\s*(?:(?:(?:else)|(?:begin)|(?:end))\s*){0,2}(?:(?:if|always @)\s*)(?P<R>.*)"
         self.right_conditional_variables_regex = r"(?!begin\b)(?P<V>\b(?<!\')[A-za-z][A-Z0-9a-z\_]+)(?:[\+\*\-\:\w\[\]]+)?"
