@@ -21,6 +21,7 @@ def verilog():
     return render_template('verilog.html')
 
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/dexp', methods=['GET', 'POST'])
 def exploration():
     return render_template('design_exploration.html')
 
@@ -87,4 +88,4 @@ def design_exploration_processing():
     html = highlight(exploration.output_hdl, SystemVerilogLexer(), HtmlFormatter(full=True))
     return exploration.debug_html+'\n'+html
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
