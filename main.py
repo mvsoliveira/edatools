@@ -4,6 +4,7 @@ from pygments import highlight
 from pygments.lexers.hdl import VhdlLexer, SystemVerilogLexer
 from pygments.formatters import HtmlFormatter
 from hdl_hierarchy import hdl_hierarchy
+from design_exploration import design_exploration
 import re
 import pandas as pd
 
@@ -15,9 +16,13 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/hier', methods=['GET', 'POST'])
 def verilog():
     return render_template('verilog.html')
+
+@app.route('/', methods=['GET', 'POST'])
+def exploration():
+    return render_template('design_exploration.html')
 
 
 def debug_matches(string):
@@ -74,14 +79,12 @@ def verilog_processing():
     html = highlight(hier.module_str, SystemVerilogLexer(), HtmlFormatter(full=True))
     return hier.debug_html+html
 
+@app.route('/design_exploration_processing', methods=['GET', 'POST'])
+def design_exploration_processing():
+    code = request.form['jscode']
+    code_string = unquote(code)
+    exploration = design_exploration(code_string)
+    html = highlight(exploration.output_hdl, SystemVerilogLexer(), HtmlFormatter(full=True))
+    return exploration.debug_html+'\n'+html
 if __name__ == '__main__':
-    try:
-        import googleclouddebugger
-
-        googleclouddebugger.enable(
-            breakpoint_enable_canary=True
-        )
-    except ImportError:
-        pass
-
     app.run(debug=True)

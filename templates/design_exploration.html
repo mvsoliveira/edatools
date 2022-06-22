@@ -1,0 +1,54 @@
+<!doctype html>
+<title>SystemVerilog Design Explorer Generator</title>
+<link rel="stylesheet" href="{{ url_for('static', filename="codemirror/lib/codemirror.css") }}">
+<script src="{{ url_for('static', filename="codemirror/lib/codemirror.js") }}"></script>
+<script src="{{ url_for('static', filename="codemirror/addon/edit/matchbrackets.js") }}"></script>
+<script src="{{ url_for('static', filename="codemirror/mode/verilog/verilog.js") }}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
+<style>
+  .CodeMirror {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+</style>
+<article>
+  <h2>SystemVerilog Design Explorer Generator</h2>
+
+  <div><textarea id="code" name="code">
+  </textarea><br></div>
+       <input type="button" id="run" name="run" value="Run" onclick="process();">
+       <button class="btn" data-clipboard-target="#place_for_result">Copy result to clipboard</button></div><br> Result:<br>
+  <div id="place_for_result"></div>
+  <script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      matchBrackets: true,
+      spellcheck: true,
+      rows: 500,
+      mode: {
+        name: "verilog",
+        noIndentKeywords: ["package"]
+      }
+    });
+    editor.setSize("100%", "600");
+    new ClipboardJS('.btn');
+
+    function process() {
+      code = editor.getValue();
+      $.ajax({
+        url: "/design_exploration_processing",
+        type: "post",
+        data: {
+          jscode: code
+        },
+        success: function(response) {
+          $("#place_for_result").html(response);
+        },
+        error: function(xhr) {
+          //Do Something to handle error
+        }
+      });
+    }
+  </script>
+</article>
