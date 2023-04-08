@@ -17,14 +17,14 @@ class design_exploration:
     def parse_ports(self):
         self.ports = {}
         self.port_decl = []
-        self.debug_p = pd.DataFrame()
+        self.debug_p = []
         # filtering port declarations and detecting directions, names, and sizes
         matches = re.finditer(self.ports_regex, self.input_hdl, re.MULTILINE)
         for matchNum, match in enumerate(matches, start=1):
             self.ports[match.groupdict()['S']] = {'D': match.groupdict()['D'], 'DB': match.groupdict()['DB'], 'DA':match.groupdict()['DA']}
-            self.debug_p = self.debug_p.append(pd.DataFrame(match.groupdict(), index=[matchNum]))
+            self.debug_p.append(pd.DataFrame(match.groupdict(), index=[matchNum]))
             self.port_decl.append(f"{match.groupdict()['D']} logic {match.groupdict()['DB']} {match.groupdict()['S']} {match.groupdict()['DA']}")
-        self.debug_html = self.debug_p.to_html()
+        self.debug_html = pd.concat(self.debug_p).to_html()
 
     def parse_name(self):
         matches = re.finditer(self.name_regex, self.input_hdl, re.MULTILINE)
@@ -61,8 +61,15 @@ class design_exploration:
 
     def generate_module(self):
         self.output_hdl = '// Automatic generated design exploration module\n'
+        if not self.clocks:
+            self.port_decl.append('input logic clk')
+
         self.output_hdl += f'module {self.name}_de (\n' + ',\n'.join(self.port_decl) + '\n);\n\n'
         self.output_hdl += '// Registers declaration\n' + ';\n'.join(self.regs_decl)+';\n\n'
+        if not self.clocks:
+            self.clocks.append('clk')
+            self.output_hdl += f'// No clock was found in the input source file, clock clk has been added to exploration wrapper\n'
+
         for c in self.clocks:
             self.output_hdl += f'// Registering interface signals for clock {c}\n'
             self.output_hdl += f'always @ (posedge {c}) begin\n    '
@@ -72,4 +79,10 @@ class design_exploration:
         self.output_hdl += f'{self.name} {self.name}_inst (\n'
         self.output_hdl += ',\n'.join(self.instantiation)+'\n);\n'
         self.output_hdl += f'\nendmodule // {self.name}_de'
+
+if __name__ == '__main__':
+    string = open('test.v', 'r').read()
+    print(string)
+    de = design_exploration(string)
+    print(de.output_hdl)
 
